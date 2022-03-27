@@ -2,6 +2,7 @@ class Jogador():
     def __init__(self, nome, tentos):
         self.nome = nome
         self.tentos = tentos
+        self.pontosRodada = 0
         self.cartaAtual = 0
         self.cartas = []
 

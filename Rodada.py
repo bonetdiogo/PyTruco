@@ -7,19 +7,42 @@ class Rodada():
 
     def JogarRodada(self):
 
+        continuarRodada = True
+
+        while continuarRodada:
+            for jogador in self.jogadores:
+                print('É a vez de', jogador.nome)
+                acao = input('Escolha a ação (jogar/esconder/trucar): ')
+
+                if (acao == 'jogar'):
+                    self.EscolherCartaAtual(jogador, acao)
+                elif (acao == 'esconder'):
+                    self.EscolherCartaAtual(jogador, acao)
+                elif (acao == 'trucar'):
+                    print('TRUUUUCO (ainda não funciona)')
+
+            vencedor = self.QuemVence()
+
+            vencedor.pontosRodada += 1
+            self.AnunciaVencedor(vencedor)
+            self.RemoverCartasUsadas()
+            continuarRodada = self.jogadores[0].pontosRodada < 2 and self.jogadores[1].pontosRodada < 2
+
+        if self.jogadores[0].pontosRodada >= 2:
+            vencedorRodada = self.jogadores[0]
+        elif self.jogadores[1].pontosRodada >= 2:
+            vencedorRodada = self.jogadores[1]
+
+        print('=============')
+        print('Fim Da Rodada', vencedorRodada, 'Venceu')
+        print('=============')
+
+    def AnunciaVencedor(self, vencedor):
+        print(vencedor.nome, 'vence o jogo com', vencedor.cartaAtual.NomeInteiro())
+
+    def RemoverCartasUsadas(self):
         for jogador in self.jogadores:
-            print('É a vez de', jogador.nome)
-            acao = input('Escolha a ação (jogar/esconder/trucar): ')
-
-            if (acao == 'jogar'):
-                self.EscolherCartaAtual(jogador, acao)
-            elif (acao == 'esconder'):
-                self.EscolherCartaAtual(jogador, acao)
-            elif (acao == 'trucar'):
-                print('TRUUUUCO (ainda não funciona)')
-
-        vencedorRodada = self.QuemVence()
-
+            jogador.cartas.remove(jogador.cartaAtual)
 
     def EscolherCartaAtual(self, jogador, acao):
         jogador.PrintOpcoesCartas()
@@ -57,15 +80,15 @@ class Rodada():
     # Ainda vou simplificar o código
     def QuemVence(self):
 
-        carta1 = self.jogadores[0]
-        carta2 = self.jogadores[1]
+        carta1 = self.jogadores[0].cartaAtual
+        carta2 = self.jogadores[1].cartaAtual
 
         # Os 2 jogadores possuem manilha, decide no naipe
         if (carta1.valor  == carta2.valor == self.manilha.valor):
             if (carta1.naipe > carta2.naipe):
-                return jogador1
+                return self.jogadores[0]
             else:
-                return jogador2
+                return self.jogadores[1]
 
         # Empatou e nenhum possui manilha
         elif (carta1.valor == carta2.valor != self.manilha.valor):
@@ -74,11 +97,11 @@ class Rodada():
         # Cartas diferentes, ganha a maior, mas perde se a outra for manilha
         elif (carta1.valor > carta2.valor):
             if (carta2 != self.manilha.valor):
-                return jogador1
+                return self.jogadores[0]
             else:
-                return jogador2
+                return self.jogadores[1]
         elif (carta1.valor < carta2.valor):
             if (carta1.valor != self.manilha.valor):
-                return jogador2
+                return self.jogadores[1]
             else:
-                return jogador1
+                return self.jogadores[0]
