@@ -28,7 +28,7 @@ rodadaAtual = Rodada.Rodada(jogadores)
 rodadaAtual.DistribuirCartas(cartas)
 
 # Ações dos jogadores
-rodadaAtual.JogarRodada()
+rodadaAtual.JogarJogo()
 
 
 

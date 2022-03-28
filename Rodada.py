@@ -5,37 +5,72 @@ class Rodada():
         self.jogadores = jogadores
         self.manilha = 0
 
-    def JogarRodada(self):
+    def JogarJogo(self):
+        continuarJogo = True
 
+        while continuarJogo:
+            self.MostrarPlacar()
+            self.JogarRodada()
+            continuarJogo = self.jogadores[0].tentos < 12 and self.jogadores[1].tentos < 12
+
+        # Confere qual dos jogadores venceu o jogo
+        for jogador in self.jogadores:
+            if (jogador.tentos >= 12):
+                vencedorJogo = jogador
+
+        print(vencedorJogo, 'VENCEU O JOGO TRUCO!!!')
+
+    def MostrarPlacar(self):
+        jogador1 = self.jogadores[0]
+        jogador2 = self.jogadores[1]
+
+        print()
+        print('O jogo está:', jogador1.nome, jogador1.tentos, 'X', jogador2.tentos, jogador2.nome)
+        print()
+
+    def JogarRodada(self):
         continuarRodada = True
 
         while continuarRodada:
             for jogador in self.jogadores:
                 print('É a vez de', jogador.nome)
-                acao = input('Escolha a ação (jogar/esconder/trucar): ')
-
-                if (acao == 'jogar'):
-                    self.EscolherCartaAtual(jogador, acao)
-                elif (acao == 'esconder'):
-                    self.EscolherCartaAtual(jogador, acao)
-                elif (acao == 'trucar'):
-                    print('TRUUUUCO (ainda não funciona)')
+                self.EscolheAcao(jogador)
 
             vencedor = self.QuemVence()
 
             vencedor.pontosRodada += 1
             self.AnunciaVencedor(vencedor)
             self.RemoverCartasUsadas()
+
+            # Continua rodada se nenhum dos jogadores possui 2 pontos
             continuarRodada = self.jogadores[0].pontosRodada < 2 and self.jogadores[1].pontosRodada < 2
 
-        if self.jogadores[0].pontosRodada >= 2:
-            vencedorRodada = self.jogadores[0]
-        elif self.jogadores[1].pontosRodada >= 2:
-            vencedorRodada = self.jogadores[1]
+        # Confere qual dos jogadores venceu a rodada
+        for jogador in self.jogadores:
+            if (jogador.pontosRodada >= 2):
+                vencedorRodada = jogador
+            jogador.pontosRodada = 0
 
         print('=============')
-        print('Fim Da Rodada', vencedorRodada, 'Venceu')
+        print('Fim Da Rodada', vencedorRodada.nome, 'Venceu')
         print('=============')
+
+    def EscolheAcao(self, jogador):
+        acao = input('Escolha a ação (jogar/esconder/trucar): ')
+
+        if (acao == 'jogar'):
+            jogador.PrintOpcoesCartas()
+            self.EscolherCarta(jogador, acao)
+        elif (acao == 'esconder'):
+            jogador.PrintOpcoesCartas()
+            self.EscolherCarta(jogador, acao)
+        elif (acao == 'trucar'):
+            self.JogoTrucado
+            print('TRUUUUCO (ainda não funciona)')
+        else:
+            print('Comando inválido, tente novamente')
+            print()
+            self.EscolheAcao(jogador)
 
     def AnunciaVencedor(self, vencedor):
         print(vencedor.nome, 'vence o jogo com', vencedor.cartaAtual.NomeInteiro())
@@ -44,17 +79,22 @@ class Rodada():
         for jogador in self.jogadores:
             jogador.cartas.remove(jogador.cartaAtual)
 
-    def EscolherCartaAtual(self, jogador, acao):
-        jogador.PrintOpcoesCartas()
-
+    def EscolherCarta(self, jogador, acao):
         frase = 'Qual carta vai ' + acao + '? '
         opcao = int(input(frase))
+        cartaInvalida = True
 
         for carta in jogador.cartas:
             if (carta.id == opcao):
+                cartaInvalida = False
                 jogador.cartaAtual = carta
                 print(jogador.nome, 'jogou um', carta.NomeInteiro())
-                print()
+
+        if (cartaInvalida == True):
+            print()
+            print('Carta inválida, tente novamente.')
+            print()
+            self.EscolherCarta(jogador, acao)
 
     # Passa por todos os jogadores, escolhe uma carta aleatória,
     # entrega ao jogador e a remove da lista, depois seleciona o vira
